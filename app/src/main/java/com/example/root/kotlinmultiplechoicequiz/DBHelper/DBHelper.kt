@@ -24,6 +24,7 @@ class DBHelper(context: Context) : SQLiteAssetHelper(context, DB_NAME, null, DB_
     //GET ALL CATEGORY
     val allCategories: MutableList<Category>
         get() {
+
             val db = instance!!.writableDatabase
 
             val cursor = db.rawQuery("SELECT * FROM Category", null)
@@ -52,7 +53,7 @@ class DBHelper(context: Context) : SQLiteAssetHelper(context, DB_NAME, null, DB_
 
         val cursor =
             db.rawQuery("SELECT * FROM Question where categoryId=$categoryId ORDER BY RANDOM() LIMIT 30 ", null)
-        val questionList = ArrayList<Category>()
+        val questionList = ArrayList<Question>()
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast) {
                 val question = Question(
@@ -64,11 +65,15 @@ class DBHelper(context: Context) : SQLiteAssetHelper(context, DB_NAME, null, DB_
                     cursor.getString(cursor.getColumnIndex("AnswerC")),
                     cursor.getString(cursor.getColumnIndex("AnswerD")),
                     cursor.getString(cursor.getColumnIndex("CorrectAnswer")),
-                    if (cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 0) java.lang.Boolean.FALSE else java.lang.Boolean
-
-
+                    if (cursor.getInt(cursor.getColumnIndex("IsImageQuestion")) == 0) java.lang.Boolean.FALSE else java.lang.Boolean.TRUE,
+                    cursor.getInt(cursor.getColumnIndex("CategoryID"))
                 )
+                questionList.add(question)
+                cursor.moveToNext()
             }
         }
+        cursor.close()
+        db.close()
+        return questionList
     }
 }
